@@ -1,32 +1,36 @@
-export default function Header() {
+export default function Header({ onBack }) {
   return (
     <div style={{
       display: 'flex',
       justifyContent: 'space-between',
       alignItems: 'center',
-      height: '40px',
-      marginBottom: '20px'
+      padding: '12px 14px 8px',
+      borderBottom: '0.5px solid var(--bg-surface)'
     }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-        <div style={{
-          width: '8px',
-          height: '8px',
-          backgroundColor: 'var(--color-violet)',
-          borderRadius: '50%',
-          boxShadow: '0 0 8px var(--color-lavender)'
-        }} />
-        <span style={{
-          fontFamily: 'var(--font-display)',
-          fontSize: '14px',
-          color: 'var(--text-primary)'
-        }}>Focus Buddy</span>
+        <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: 'var(--color-violet)' }} />
+        <h1 style={{ margin: 0, fontSize: '13px', fontWeight: '600', color: 'var(--text-primary)', fontFamily: 'var(--font-heading)' }}>
+          Focus Buddy
+        </h1>
       </div>
-      <button style={{
-        color: 'var(--text-muted)',
-        fontSize: '16px'
-      }}>
-        ⚙️
-      </button>
+      <div style={{ display: 'flex', gap: '8px' }}>
+        {onBack && (
+          <button onClick={onBack} style={{
+            width: '26px', height: '26px', borderRadius: '6px', border: '0.5px solid var(--bg-surface)',
+            background: 'var(--bg-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center',
+            cursor: 'pointer', color: 'var(--text-secondary)'
+          }}>
+            <span style={{ fontSize: '12px' }}>←</span>
+          </button>
+        )}
+        <button style={{
+          width: '26px', height: '26px', borderRadius: '6px', border: '0.5px solid var(--bg-surface)',
+          background: 'var(--bg-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center',
+          cursor: 'pointer', color: 'var(--text-secondary)'
+        }}>
+          ⚙
+        </button>
+      </div>
     </div>
   );
 }

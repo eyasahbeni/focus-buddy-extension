@@ -2,14 +2,23 @@ import { useState, useEffect } from 'react';
 import { useTimer } from './hooks/useTimer';
 import { useStats } from './hooks/useStats';
 import Header from './components/Header';
-import TimerRing from './components/TimerRing';
-import TimeInputRow from './components/TimeInputRow';
-import ControlsRow from './components/ControlsRow';
-import MicPill from './components/MicPill';
 import StatsBar from './components/StatsBar';
-import TaskSpace from './components/TaskSpace';
+import OnboardingScreen from './components/OnboardingScreen';
+import PlanningScreen from './components/PlanningScreen';
+import FocusScreen from './components/FocusScreen';
+import CompletionScreen from './components/CompletionScreen';
 
 function App() {
+  const [currentScreen, setCurrentScreen] = useState('onboarding'); // onboarding, planning, focus, complete
+  const [tasks, setTasks] = useState(() => {
+    const savedTasks = localStorage.getItem('focusBuddyTasks');
+    return savedTasks ? JSON.parse(savedTasks) : [];
+  });
+  const [activeTask, setActiveTask] = useState(null);
+
+  const { stats, addSession } = useStats();
+  
+  // Timer setup
   const { 
     remainingTime, 
     totalTime, 
@@ -20,73 +29,90 @@ function App() {
     updateTime 
   } = useTimer(25 * 60);
 
-  const { stats, addSession } = useStats();
+  const [hasFinished, setHasFinished] = useState(false);
+  useEffect(() => {
+    if (totalTime > 0 && remainingTime === 0 && !hasFinished) {
+      setHasFinished(true); 
+      const focusMinutes = totalTime / 60;
+      addSession(focusMinutes);
+      // Mark task as completed if timer finishes
+      if (activeTask) {
+        setTasks(prev => prev.map(t => t.id === activeTask.id ? { ...t, completed: true } : t));
+      }
+      setCurrentScreen('complete');
+    } else if (remainingTime > 0) {
+      setHasFinished(false);
+    }
+  }, [remainingTime, totalTime, hasFinished, activeTask]);
 
-  // Load tasks from local storage or start empty
-  const [tasks, setTasks] = useState(() => {
-    const savedTasks = localStorage.getItem('focusBuddyTasks');
-    return savedTasks ? JSON.parse(savedTasks) : [];
-  });
-  const [activeTask, setActiveTask] = useState(null);
-
-  // Save tasks on change
+  // Tasks persistence
   useEffect(() => {
     localStorage.setItem('focusBuddyTasks', JSON.stringify(tasks));
   }, [tasks]);
 
-  // Track completed sessions
-  const [hasFinished, setHasFinished] = useState(false);
-  useEffect(() => {
-    if (totalTime > 0 && remainingTime === 0 && !hasFinished) {
-      setHasFinished(true); // Prevent multiple triggers
-      const focusMinutes = totalTime / 60;
-      addSession(focusMinutes);
-    } else if (remainingTime > 0) {
-      setHasFinished(false);
-    }
-  }, [remainingTime, totalTime, hasFinished]);
-
-  const handleTimeChange = (seconds) => {
-    if (!isActive) updateTime(seconds);
-  };
-
-  const handleStartPause = () => {
-    if (isActive) pauseTimer();
-    else startTimer(totalTime);
-  };
-
-  const handleTasksParsed = (newTasks) => {
-    setTasks(prev => [...prev, ...newTasks]);
-  };
-
-  const handleDeleteTask = (taskId) => {
-    setTasks(prev => prev.filter(t => t.id !== taskId));
-    if (activeTask && activeTask.id === taskId) {
-      setActiveTask(null);
-    }
+  // Helper to mark task done manually
+  const toggleTaskDone = (taskId) => {
+    setTasks(prev => prev.map(t => t.id === taskId ? { ...t, completed: !t.completed } : t));
   };
 
   return (
-    <>
-      <Header />
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-        <TimerRing remainingTime={remainingTime} totalTime={totalTime} isActive={isActive} activeTask={activeTask} />
-        
-        <TimeInputRow onTimeChange={handleTimeChange} disabled={isActive} />
-        <ControlsRow isActive={isActive} onStartPause={handleStartPause} onReset={resetTimer} />
-        <MicPill onTasksParsed={handleTasksParsed} />
-        
-        <TaskSpace 
-          tasks={tasks} 
-          activeTask={activeTask} 
-          onSetActiveTask={setActiveTask} 
-          onDeleteTask={handleDeleteTask} 
-        />
-      </div>
-      <div style={{ marginTop: 'auto', paddingTop: '20px' }}>
+    <div className={`app-container s-${currentScreen}`}>
+      
+      {/* SCREEN 0 */}
+      <div className="screen screen-onboarding">
+        <OnboardingScreen onContinue={() => setCurrentScreen('planning')} />
         <StatsBar stats={stats} />
       </div>
-    </>
+
+      {/* SCREEN 1 */}
+      <div className="screen screen-planning">
+        <Header />
+        <PlanningScreen 
+          tasks={tasks} 
+          setTasks={setTasks} 
+          onSelectTask={(task) => {
+            setActiveTask(task);
+            setCurrentScreen('focus');
+          }}
+          onToggleDone={toggleTaskDone}
+        />
+        <div style={{ marginTop: 'auto' }}>
+          <StatsBar stats={stats} />
+        </div>
+      </div>
+
+      {/* SCREEN 2 */}
+      <div className="screen screen-focus">
+        <Header onBack={() => setCurrentScreen('planning')} />
+        <FocusScreen 
+          activeTask={activeTask}
+          onCompleteTask={() => {
+            if (activeTask) toggleTaskDone(activeTask.id);
+            setCurrentScreen('complete');
+          }}
+          timer={{
+             remainingTime, totalTime, isActive, startTimer, pauseTimer, resetTimer, updateTime
+          }}
+        />
+        <div style={{ marginTop: 'auto' }}>
+          <StatsBar stats={stats} />
+        </div>
+      </div>
+
+      {/* SCREEN 3 */}
+      <div className="screen screen-complete">
+        <Header onBack={() => setCurrentScreen('planning')} />
+        <CompletionScreen 
+          activeTask={activeTask}
+          timeSpent={totalTime - remainingTime}
+          onBack={() => setCurrentScreen('planning')}
+        />
+        <div style={{ marginTop: 'auto' }}>
+          <StatsBar stats={stats} />
+        </div>
+      </div>
+
+    </div>
   );
 }
 
