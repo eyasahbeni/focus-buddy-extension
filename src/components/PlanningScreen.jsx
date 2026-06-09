@@ -3,6 +3,8 @@ import { useState } from 'react';
 export default function PlanningScreen({ tasks, setTasks, onSelectTask, onToggleDone }) {
   const [inputText, setInputText] = useState('');
   const [isRecording, setIsRecording] = useState(false);
+  const [editingTaskId, setEditingTaskId] = useState(null);
+  const [editTaskText, setEditTaskText] = useState('');
 
   const startRecording = () => {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -49,6 +51,30 @@ export default function PlanningScreen({ tasks, setTasks, onSelectTask, onToggle
     setTasks(prev => prev.map(t => t.id === taskId ? { ...t, priority: nextMap[currentPriority] } : t));
   };
 
+  const handleDeleteTask = (e, taskId) => {
+    e.stopPropagation();
+    setTasks(prev => prev.filter(t => t.id !== taskId));
+  };
+
+  const handleStartEdit = (e, task) => {
+    e.stopPropagation();
+    setEditingTaskId(task.id);
+    setEditTaskText(task.text);
+  };
+
+  const handleSaveEdit = (e, taskId) => {
+    e.stopPropagation();
+    if (editTaskText.trim()) {
+      setTasks(prev => prev.map(t => t.id === taskId ? { ...t, text: editTaskText.trim() } : t));
+    }
+    setEditingTaskId(null);
+  };
+
+  const handleEditKeyDown = (e, taskId) => {
+    if (e.key === 'Enter') handleSaveEdit(e, taskId);
+    if (e.key === 'Escape') setEditingTaskId(null);
+  };
+
   return (
     <div style={{ flex: 1, display: 'flex', flexDirection: 'column', padding: '0 12px' }}>
       
@@ -92,13 +118,15 @@ export default function PlanningScreen({ tasks, setTasks, onSelectTask, onToggle
           if (task.priority === 'p2') pColor = '#f59e0b';
           if (task.priority === 'p3') pColor = '#7C3AED';
 
+          const isEditing = editingTaskId === task.id;
+
           return (
             <div key={task.id} 
-              onClick={() => !task.completed && onSelectTask(task)}
+              onClick={() => !task.completed && !isEditing && onSelectTask(task)}
               style={{
                 display: 'flex', alignItems: 'center', gap: '8px',
                 background: 'var(--bg-surface)', border: '0.5px solid var(--bg-elevated)',
-                borderRadius: '8px', padding: '8px 10px', cursor: task.completed ? 'default' : 'pointer',
+                borderRadius: '8px', padding: '8px 10px', cursor: task.completed || isEditing ? 'default' : 'pointer',
                 opacity: task.completed ? 0.45 : 1
               }}>
               <div 
@@ -111,19 +139,46 @@ export default function PlanningScreen({ tasks, setTasks, onSelectTask, onToggle
                 {task.completed && '✓'}
               </div>
               <div style={{ width: '7px', height: '7px', borderRadius: '50%', backgroundColor: pColor }} />
-              <div style={{ flex: 1, fontSize: '12px', color: 'var(--text-primary)', textDecoration: task.completed ? 'line-through' : 'none', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                {task.text}
-              </div>
               
-              <div 
-                onClick={(e) => !task.completed && handleCyclePriority(e, task.id, task.priority)}
-                style={{ 
-                  fontSize: '9px', fontWeight: 'bold', padding: '3px 6px', borderRadius: '4px', 
-                  color: pColor, background: `${pColor}22`, textTransform: 'uppercase',
-                  cursor: task.completed ? 'default' : 'pointer', userSelect: 'none'
-                }}>
-                {task.priority === 'p4' ? 'NORMAL' : task.priority}
-              </div>
+              {isEditing ? (
+                <input 
+                  value={editTaskText}
+                  onChange={e => setEditTaskText(e.target.value)}
+                  onKeyDown={e => handleEditKeyDown(e, task.id)}
+                  onClick={e => e.stopPropagation()}
+                  autoFocus
+                  style={{ flex: 1, background: 'transparent', border: 'none', borderBottom: '1px solid var(--color-violet)', color: 'var(--text-primary)', outline: 'none', fontSize: '12px', paddingBottom: '2px' }}
+                />
+              ) : (
+                <div style={{ flex: 1, fontSize: '12px', color: 'var(--text-primary)', textDecoration: task.completed ? 'line-through' : 'none', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  {task.text}
+                </div>
+              )}
+
+              {!task.completed && (
+                <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
+                  {isEditing ? (
+                    <div onClick={(e) => handleSaveEdit(e, task.id)} style={{ cursor: 'pointer', fontSize: '12px', padding: '2px' }}>✅</div>
+                  ) : (
+                    <>
+                      <div onClick={(e) => handleStartEdit(e, task)} style={{ cursor: 'pointer', fontSize: '11px', padding: '2px', opacity: 0.7 }}>✏️</div>
+                      <div onClick={(e) => handleDeleteTask(e, task.id)} style={{ cursor: 'pointer', fontSize: '11px', padding: '2px', opacity: 0.7 }}>❌</div>
+                    </>
+                  )}
+                </div>
+              )}
+              
+              {!isEditing && (
+                <div 
+                  onClick={(e) => !task.completed && handleCyclePriority(e, task.id, task.priority)}
+                  style={{ 
+                    fontSize: '9px', fontWeight: 'bold', padding: '3px 6px', borderRadius: '4px', 
+                    color: pColor, background: `${pColor}22`, textTransform: 'uppercase',
+                    cursor: task.completed ? 'default' : 'pointer', userSelect: 'none', marginLeft: '4px'
+                  }}>
+                  {task.priority === 'p4' ? 'NORMAL' : task.priority}
+                </div>
+              )}
             </div>
           )
         })}
