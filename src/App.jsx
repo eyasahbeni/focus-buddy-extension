@@ -64,6 +64,7 @@ function App() {
       
       {/* SCREEN 0 */}
       <div className="screen screen-onboarding">
+        <Header />
         <OnboardingScreen onContinue={() => setCurrentScreen('planning')} />
       </div>
 

@@ -1,9 +1,15 @@
 // background.js - FocusBuddy Service Worker
 
-// Configure the extension to open the side panel when clicking the toolbar icon
-chrome.sidePanel
-  .setPanelBehavior({ openPanelOnActionClick: true })
-  .catch((error) => console.error("Error setting side panel behavior:", error));
+chrome.action.onClicked.addListener((tab) => {
+  // Create a persistent floating popup window that won't close when clicking away
+  chrome.windows.create({
+    url: "dist/index.html",
+    type: "popup",
+    width: 380,
+    height: 580,
+    focused: true
+  });
+});
 
 chrome.runtime.onInstalled.addListener(() => {
   console.log("FocusBuddy (ADHD Workflow Companion) installed successfully.");

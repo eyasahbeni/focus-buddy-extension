@@ -4,6 +4,13 @@ Your ultimate ADHD focus companion Chrome Extension. Speak your tasks, set a tim
 
 ![Focus Buddy Architecture](./public/architecture.png)
 
+## Screenshots
+*Drop your 4 new screenshot files into the `public/` folder matching these names:*
+- ![Screen 0 - Login](./public/screen0.png)
+- ![Screen 1 - Planning](./public/screen1.png)
+- ![Screen 2 - Active Focus](./public/screen2.png)
+- ![Screen 3 - Completion](./public/screen3.png)
+
 ## Overview
 Focus Buddy is a premium, beautifully designed Chrome Extension built to help individuals with ADHD (or anyone who wants to stay locked in) manage their workflow. It abandons the cluttered "everything on one page" layout in favor of a sleek, two-screen push navigation system. You plan your tasks in **State 1**, and then lock into a focused timer in **State 2**.
 

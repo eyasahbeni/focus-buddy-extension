@@ -6,7 +6,8 @@
   "permissions": [
     "storage"
   ],
-  "action": {
-    "default_popup": "dist/index.html"
-  }
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {}
 }
