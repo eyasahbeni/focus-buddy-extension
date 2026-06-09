@@ -7,6 +7,19 @@ Your ultimate ADHD focus companion Chrome Extension. Speak your tasks, set a tim
 ## Overview
 Focus Buddy is a premium, beautifully designed Chrome Extension built to help individuals with ADHD (or anyone who wants to stay locked in) manage their workflow. It abandons the cluttered "everything on one page" layout in favor of a sleek, two-screen push navigation system. You plan your tasks in **State 1**, and then lock into a focused timer in **State 2**.
 
+## 🧠 Why I Built This (The Origin Story)
+As someone with ADHD, I found that standard productivity apps were either too rigid, too noisy, or too distracting. I needed a personal companion tailored specifically to my brain's workflow:
+- **Personalized Note Space:** A place to instantly brain-dump tasks exactly how I want to, without friction.
+- **Custom Timers:** The flexibility to set precise time blocks tailored to my varying attention spans.
+- **Dynamic Notifications:** A visual system that gently nudges me to stay on track rather than blaring anxiety-inducing alarms.
+
+This extension is currently my **MVP (Minimum Viable Product)**. 
+
+### 🔮 Future Roadmap
+In the future, I plan to evolve Focus Buddy by adding deep AI integrations, such as:
+- Automatically syncing and logging tasks directly into my Calendar.
+- Connecting to my inbox to automatically parse, sort, and prioritize emails into my Focus Buddy task list.
+
 ## 🎨 Deep Space Violet Design System
 The entire application is built on a custom, gender-neutral "Deep Space Violet" design system:
 - **Base:** Near-black deep violet (`#0D0D12` and `#16161F`)
