@@ -1,3 +1,12 @@
+let cachedVoices = [];
+if (window.speechSynthesis) {
+  // Kick off voice loading immediately
+  cachedVoices = window.speechSynthesis.getVoices();
+  window.speechSynthesis.onvoiceschanged = () => {
+    cachedVoices = window.speechSynthesis.getVoices();
+  };
+}
+
 export const speak = (text) => {
   if (!window.speechSynthesis) return;
   
@@ -6,9 +15,8 @@ export const speak = (text) => {
   
   const utterance = new SpeechSynthesisUtterance(text);
   
-  // Target exactly one high-quality English voice model
-  const voices = window.speechSynthesis.getVoices();
-  const preferredVoice = voices.find(v => v.name === 'Google US English') || voices.find(v => v.lang === 'en-US');
+  // Target exactly one high-quality English voice model using our pre-loaded cache
+  const preferredVoice = cachedVoices.find(v => v.name === 'Google US English') || cachedVoices.find(v => v.lang === 'en-US');
   
   if (preferredVoice) {
     utterance.voice = preferredVoice;
