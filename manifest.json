@@ -1,0 +1,12 @@
+{
+  "manifest_version": 3,
+  "name": "Focus Buddy",
+  "version": "1.0.0",
+  "description": "Premium ADHD focus timer and workflow companion.",
+  "permissions": [
+    "storage"
+  ],
+  "action": {
+    "default_popup": "dist/index.html"
+  }
+}
