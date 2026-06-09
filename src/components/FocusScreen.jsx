@@ -1,20 +1,58 @@
+import { useEffect, useRef } from 'react';
 import TimerRing from './TimerRing';
 import TimeInputRow from './TimeInputRow';
 import ControlsRow from './ControlsRow';
+import { speak } from '../utils/speech';
 
 export default function FocusScreen({ activeTask, onCompleteTask, timer }) {
   const { remainingTime, totalTime, isActive, startTimer, pauseTimer, resetTimer, updateTime } = timer;
   
+  const hasSpokenStart = useRef(false);
+  const hasSpokenHalfway = useRef(false);
+  const hasSpokenAlmost = useRef(false);
+
+  // Trigger speech when timer starts
+  useEffect(() => {
+    if (isActive && !hasSpokenStart.current) {
+      speak(`Let's go. Time to focus on: ${activeTask?.text || 'your task'}. You've got this.`);
+      hasSpokenStart.current = true;
+    }
+  }, [isActive, activeTask]);
+
   let pColor = '#2DD4BF';
   if (activeTask?.priority === 'p1') pColor = '#ef4444';
   if (activeTask?.priority === 'p2') pColor = '#f59e0b';
   if (activeTask?.priority === 'p3') pColor = '#7C3AED';
 
   const spentSoFar = totalTime - remainingTime;
-  const isOver = false; // Add logic if timer goes into negative
+  const isOver = false;
 
   const percentDone = totalTime > 0 ? (totalTime - remainingTime) / totalTime : 0;
-  const showNudge = (percentDone > 0.49 && percentDone < 0.55) || (percentDone > 0.79 && percentDone < 0.85);
+  
+  const showNudgeHalfway = (percentDone > 0.49 && percentDone < 0.55);
+  const showNudgeAlmost = (percentDone > 0.79 && percentDone < 0.85);
+  const showNudge = showNudgeHalfway || showNudgeAlmost;
+
+  // Trigger speech for nudges
+  useEffect(() => {
+    if (showNudgeHalfway && !hasSpokenHalfway.current) {
+      speak(`You are halfway there. Keep your focus locked in.`);
+      hasSpokenHalfway.current = true;
+    }
+    if (showNudgeAlmost && !hasSpokenAlmost.current) {
+      speak(`Almost done. Just a little more time left. Finish strong.`);
+      hasSpokenAlmost.current = true;
+    }
+  }, [showNudgeHalfway, showNudgeAlmost]);
+
+  // Reset speech flags when timer resets
+  useEffect(() => {
+    if (remainingTime === totalTime) {
+      hasSpokenStart.current = false;
+      hasSpokenHalfway.current = false;
+      hasSpokenAlmost.current = false;
+    }
+  }, [remainingTime, totalTime]);
 
   return (
     <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>

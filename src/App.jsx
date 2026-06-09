@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useTimer } from './hooks/useTimer';
 import { useStats } from './hooks/useStats';
+import { speak } from './utils/speech';
 import Header from './components/Header';
 import StatsBar from './components/StatsBar';
 import OnboardingScreen from './components/OnboardingScreen';
@@ -38,6 +39,9 @@ function App() {
       // Mark task as completed if timer finishes
       if (activeTask) {
         setTasks(prev => prev.map(t => t.id === activeTask.id ? { ...t, completed: true } : t));
+        speak(`Awesome work. You have completed: ${activeTask.text}. Take a deep breath.`);
+      } else {
+        speak(`Awesome work. Session complete. Take a deep breath.`);
       }
       setCurrentScreen('complete');
     } else if (remainingTime > 0) {
