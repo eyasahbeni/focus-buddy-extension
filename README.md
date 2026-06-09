@@ -55,6 +55,3 @@ The extension features a smooth, horizontal push navigation (sliding left/right)
 - **Styling:** Vanilla CSS Custom Properties (Zero bloated frameworks)
 - **Voice Parsing:** Native Chrome Web Speech API (`window.SpeechRecognition`) — completely offline, no paid LLMs required!
 - **State Management:** React Hooks + Local Storage / Chrome Storage API.
-
----
-*Note: Make sure to drop your architecture screenshot into the `public/` folder and name it `architecture.png` so it renders beautifully above!*
