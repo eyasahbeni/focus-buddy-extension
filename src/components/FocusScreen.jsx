@@ -20,7 +20,7 @@ export default function FocusScreen({ activeTask, onCompleteTask, timer }) {
     <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
       
       <div style={{ 
-        margin: '8px 12px', background: 'var(--bg-surface)', borderRadius: '8px', padding: '8px 10px',
+        margin: '4px 12px', background: 'var(--bg-surface)', borderRadius: '8px', padding: '6px 10px',
         display: 'flex', alignItems: 'center', gap: '8px', borderLeft: `3px solid ${pColor}`
       }}>
         <div style={{ width: '7px', height: '7px', borderRadius: '50%', backgroundColor: pColor }} />
@@ -38,16 +38,16 @@ export default function FocusScreen({ activeTask, onCompleteTask, timer }) {
 
       <TimerRing remainingTime={remainingTime} totalTime={totalTime} isActive={isActive} activeTask={activeTask} />
 
-      <div style={{ margin: '0 12px 6px', display: 'flex', gap: '5px' }}>
-        <div style={{ flex: 1, background: 'var(--bg-surface)', border: '0.5px solid var(--bg-elevated)', borderRadius: '7px', padding: '5px 8px', textAlign: 'center' }}>
+      <div style={{ margin: '0 12px 4px', display: 'flex', gap: '5px' }}>
+        <div style={{ flex: 1, background: 'var(--bg-surface)', border: '0.5px solid var(--bg-elevated)', borderRadius: '7px', padding: '4px 6px', textAlign: 'center' }}>
           <div style={{ fontFamily: 'var(--font-heading)', fontSize: '13px', fontWeight: '600', color: 'var(--text-primary)' }}>{Math.floor(totalTime/60)}m</div>
           <div style={{ fontSize: '9px', color: 'var(--text-muted)' }}>Planned</div>
         </div>
-        <div style={{ flex: 1, background: 'var(--bg-surface)', border: '0.5px solid var(--bg-elevated)', borderRadius: '7px', padding: '5px 8px', textAlign: 'center' }}>
+        <div style={{ flex: 1, background: 'var(--bg-surface)', border: '0.5px solid var(--bg-elevated)', borderRadius: '7px', padding: '4px 6px', textAlign: 'center' }}>
           <div style={{ fontFamily: 'var(--font-heading)', fontSize: '13px', fontWeight: '600', color: isOver ? '#f59e0b' : '#2DD4BF' }}>{Math.floor(spentSoFar/60)}m</div>
           <div style={{ fontSize: '9px', color: 'var(--text-muted)' }}>Spent so far</div>
         </div>
-        <div style={{ flex: 1, background: 'var(--bg-surface)', border: '0.5px solid var(--bg-elevated)', borderRadius: '7px', padding: '5px 8px', textAlign: 'center' }}>
+        <div style={{ flex: 1, background: 'var(--bg-surface)', border: '0.5px solid var(--bg-elevated)', borderRadius: '7px', padding: '4px 6px', textAlign: 'center' }}>
           <div style={{ fontFamily: 'var(--font-heading)', fontSize: '13px', fontWeight: '600', color: 'var(--text-primary)' }}>{Math.floor(remainingTime/60)}m</div>
           <div style={{ fontSize: '9px', color: 'var(--text-muted)' }}>Remaining</div>
         </div>

@@ -23,8 +23,8 @@ export default function PlanningScreen({ tasks, setTasks, onSelectTask, onToggle
     recognition.start();
   };
 
-  const handleAddTask = (e) => {
-    if (e.key === 'Enter' && inputText.trim()) {
+  const submitTasks = () => {
+    if (inputText.trim()) {
       const rawTasks = inputText.toLowerCase().split(/\b(?:and|then)\b/);
       const newTasks = rawTasks.map(rawText => {
         let text = rawText.trim();
@@ -43,6 +43,12 @@ export default function PlanningScreen({ tasks, setTasks, onSelectTask, onToggle
     }
   };
 
+  const handleCyclePriority = (e, taskId, currentPriority) => {
+    e.stopPropagation();
+    const nextMap = { p4: 'p3', p3: 'p2', p2: 'p1', p1: 'p4' };
+    setTasks(prev => prev.map(t => t.id === taskId ? { ...t, priority: nextMap[currentPriority] } : t));
+  };
+
   return (
     <div style={{ flex: 1, display: 'flex', flexDirection: 'column', padding: '0 12px' }}>
       
@@ -55,16 +61,22 @@ export default function PlanningScreen({ tasks, setTasks, onSelectTask, onToggle
           <button onClick={startRecording} style={{
             width: '30px', height: '30px', borderRadius: '50%', background: 'var(--bg-elevated)',
             border: '1px solid var(--bg-surface)', color: isRecording ? '#ef4444' : 'var(--color-violet)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer'
+            display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', flexShrink: 0
           }}>🎤</button>
+          
           <input 
-            value={inputText} onChange={e => setInputText(e.target.value)} onKeyDown={handleAddTask}
+            value={inputText} onChange={e => setInputText(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && submitTasks()}
             placeholder={isRecording ? "Listening..." : "Brain dump here... speak or type"}
-            style={{ flex: 1, background: 'transparent', border: 'none', color: 'var(--text-primary)', outline: 'none', fontSize: '12px' }}
+            style={{ flex: 1, background: 'transparent', border: 'none', color: 'var(--text-primary)', outline: 'none', fontSize: '12px', minWidth: 0 }}
           />
-        </div>
-        <div style={{ fontSize: '10px', color: 'var(--text-muted)', paddingLeft: '38px' }}>
-          Try: "Write email high priority, clean desk low priority" (Press Enter)
+
+          <button onClick={submitTasks} style={{
+            width: '28px', height: '28px', borderRadius: '6px', background: 'var(--color-violet)',
+            border: 'none', color: '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+            opacity: inputText.trim() ? 1 : 0.5, pointerEvents: inputText.trim() ? 'auto' : 'none'
+          }}>
+            ↵
+          </button>
         </div>
       </div>
 
@@ -99,11 +111,18 @@ export default function PlanningScreen({ tasks, setTasks, onSelectTask, onToggle
                 {task.completed && '✓'}
               </div>
               <div style={{ width: '7px', height: '7px', borderRadius: '50%', backgroundColor: pColor }} />
-              <div style={{ flex: 1, fontSize: '12px', color: 'var(--text-primary)', textDecoration: task.completed ? 'line-through' : 'none' }}>
+              <div style={{ flex: 1, fontSize: '12px', color: 'var(--text-primary)', textDecoration: task.completed ? 'line-through' : 'none', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                 {task.text}
               </div>
-              <div style={{ fontSize: '9px', fontWeight: 'bold', padding: '2px 5px', borderRadius: '4px', color: pColor, background: `${pColor}22`, textTransform: 'uppercase' }}>
-                {task.priority}
+              
+              <div 
+                onClick={(e) => !task.completed && handleCyclePriority(e, task.id, task.priority)}
+                style={{ 
+                  fontSize: '9px', fontWeight: 'bold', padding: '3px 6px', borderRadius: '4px', 
+                  color: pColor, background: `${pColor}22`, textTransform: 'uppercase',
+                  cursor: task.completed ? 'default' : 'pointer', userSelect: 'none'
+                }}>
+                {task.priority === 'p4' ? 'NORMAL' : task.priority}
               </div>
             </div>
           )

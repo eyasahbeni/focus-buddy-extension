@@ -61,7 +61,6 @@ function App() {
       {/* SCREEN 0 */}
       <div className="screen screen-onboarding">
         <OnboardingScreen onContinue={() => setCurrentScreen('planning')} />
-        <StatsBar stats={stats} />
       </div>
 
       {/* SCREEN 1 */}
