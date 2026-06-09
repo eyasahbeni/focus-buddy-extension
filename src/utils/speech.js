@@ -6,9 +6,9 @@ export const speak = (text) => {
   
   const utterance = new SpeechSynthesisUtterance(text);
   
-  // Try to find a natural sounding English voice
+  // Target exactly one high-quality English voice model
   const voices = window.speechSynthesis.getVoices();
-  const preferredVoice = voices.find(v => v.lang === 'en-US' && (v.name.includes('Google') || v.name.includes('Samantha') || v.name.includes('Daniel'))) || voices.find(v => v.lang.startsWith('en')) || voices[0];
+  const preferredVoice = voices.find(v => v.name === 'Google US English') || voices.find(v => v.lang === 'en-US');
   
   if (preferredVoice) {
     utterance.voice = preferredVoice;
