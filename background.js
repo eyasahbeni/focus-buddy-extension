@@ -21,7 +21,7 @@ chrome.alarms.onAlarm.addListener(async (alarm) => {
     const taskName = alarm.name.split("|")[1];
     chrome.notifications.create(alarm.name, {
       type: "basic",
-      iconUrl: "public/icon.png",
+      iconUrl: chrome.runtime.getURL("public/icon.png"),
       title: "Focus Buddy: Scheduled Task",
       message: `It's time to focus on: ${taskName}`,
       priority: 2,
