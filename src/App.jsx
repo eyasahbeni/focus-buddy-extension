@@ -8,6 +8,8 @@ import OnboardingScreen from './components/OnboardingScreen';
 import PlanningScreen from './components/PlanningScreen';
 import FocusScreen from './components/FocusScreen';
 import CompletionScreen from './components/CompletionScreen';
+import CalendarScreen from './components/CalendarScreen';
+import { syncTaskToCalendar } from './utils/googleCalendar';
 
 function App() {
   const [currentScreen, setCurrentScreen] = useState('onboarding'); // onboarding, planning, focus, complete
@@ -38,8 +40,14 @@ function App() {
       addSession(focusMinutes);
       // Mark task as completed if timer finishes
       if (activeTask) {
-        setTasks(prev => prev.map(t => t.id === activeTask.id ? { ...t, completed: true } : t));
+        const completedDate = new Date().toISOString();
+        setTasks(prev => prev.map(t => t.id === activeTask.id ? { ...t, completed: true, completedAt: completedDate } : t));
         speak(`Awesome work. You have completed: ${activeTask.text}. Take a deep breath.`);
+        
+        // Sync to Google Calendar
+        syncTaskToCalendar(activeTask.text, focusMinutes)
+          .then(() => console.log('Successfully synced to Google Calendar'))
+          .catch((err) => console.log('Skipped Google Calendar sync (Not authenticated or missing ID).', err));
       } else {
         speak(`Awesome work. Session complete. Take a deep breath.`);
       }
@@ -56,7 +64,13 @@ function App() {
 
   // Helper to mark task done manually
   const toggleTaskDone = (taskId) => {
-    setTasks(prev => prev.map(t => t.id === taskId ? { ...t, completed: !t.completed } : t));
+    setTasks(prev => prev.map(t => {
+      if (t.id === taskId) {
+        const isNowCompleted = !t.completed;
+        return { ...t, completed: isNowCompleted, completedAt: isNowCompleted ? new Date().toISOString() : null };
+      }
+      return t;
+    }));
   };
 
   return (
@@ -79,6 +93,7 @@ function App() {
             setCurrentScreen('focus');
           }}
           onToggleDone={toggleTaskDone}
+          onOpenCalendar={() => setCurrentScreen('calendar')}
         />
         <div style={{ marginTop: 'auto' }}>
           <StatsBar stats={stats} />
@@ -110,7 +125,17 @@ function App() {
           activeTask={activeTask}
           timeSpent={totalTime - remainingTime}
           onBack={() => setCurrentScreen('planning')}
+          stats={stats}
         />
+        <div style={{ marginTop: 'auto' }}>
+          <StatsBar stats={stats} />
+        </div>
+      </div>
+
+      {/* SCREEN 4 */}
+      <div className="screen screen-calendar" style={{ display: currentScreen === 'calendar' ? 'flex' : 'none', flexDirection: 'column', height: '100%' }}>
+        <Header onBack={() => setCurrentScreen('planning')} />
+        <CalendarScreen tasks={tasks} stats={stats} />
         <div style={{ marginTop: 'auto' }}>
           <StatsBar stats={stats} />
         </div>

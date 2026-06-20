@@ -4,8 +4,13 @@
   "version": "1.0.0",
   "description": "Premium ADHD focus timer and workflow companion.",
   "permissions": [
-    "storage"
+    "storage",
+    "identity"
   ],
+  "oauth2": {
+    "client_id": "REPLACE_WITH_YOUR_CLIENT_ID.apps.googleusercontent.com",
+    "scopes": ["https://www.googleapis.com/auth/calendar.events"]
+  },
   "background": {
     "service_worker": "background.js"
   },

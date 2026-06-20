@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-export default function PlanningScreen({ tasks, setTasks, onSelectTask, onToggleDone }) {
+export default function PlanningScreen({ tasks, setTasks, onSelectTask, onToggleDone, onOpenCalendar }) {
   const [inputText, setInputText] = useState('');
   const [isRecording, setIsRecording] = useState(false);
   const [editingTaskId, setEditingTaskId] = useState(null);
@@ -106,9 +106,12 @@ export default function PlanningScreen({ tasks, setTasks, onSelectTask, onToggle
         </div>
       </div>
 
-      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '10px', color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '8px' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '10px', color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '8px' }}>
         <span>Today's Tasks</span>
-        <span>{tasks.length} tasks</span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <span>{tasks.length} tasks</span>
+          <div onClick={onOpenCalendar} style={{ cursor: 'pointer', fontSize: '14px', background: 'var(--bg-elevated)', padding: '4px', borderRadius: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>📅</div>
+        </div>
       </div>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
