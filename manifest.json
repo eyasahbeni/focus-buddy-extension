@@ -8,7 +8,7 @@
     "identity"
   ],
   "oauth2": {
-    "client_id": "REPLACE_WITH_YOUR_CLIENT_ID.apps.googleusercontent.com",
+    "client_id": "730813875128-km246te4qh5q11t6tq63lv19k40u88dp.apps.googleusercontent.com",
     "scopes": ["https://www.googleapis.com/auth/calendar.events"]
   },
   "background": {
