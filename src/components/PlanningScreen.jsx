@@ -175,11 +175,14 @@ export default function PlanningScreen({ tasks, setTasks, onSelectTask, onToggle
                 <div 
                   onClick={(e) => !task.completed && handleCyclePriority(e, task.id, task.priority)}
                   style={{ 
-                    fontSize: '9px', fontWeight: 'bold', padding: '3px 6px', borderRadius: '4px', 
+                    fontSize: '8.5px', fontWeight: 'bold', padding: '3px 6px', borderRadius: '4px', 
                     color: pColor, background: `${pColor}22`, textTransform: 'uppercase',
-                    cursor: task.completed ? 'default' : 'pointer', userSelect: 'none', marginLeft: '4px'
+                    cursor: task.completed ? 'default' : 'pointer', userSelect: 'none', marginLeft: '4px',
+                    whiteSpace: 'nowrap'
                   }}>
-                  {task.priority === 'p4' ? 'NORMAL' : task.priority}
+                  {task.priority === 'p1' ? 'HIGH PRIORITY' : 
+                   task.priority === 'p2' ? 'MEDIUM PRIORITY' : 
+                   task.priority === 'p3' ? 'LOW PRIORITY' : 'NORMAL'}
                 </div>
               )}
             </div>
