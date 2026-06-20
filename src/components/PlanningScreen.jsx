@@ -158,18 +158,18 @@ export default function PlanningScreen({ tasks, setTasks, onSelectTask, onToggle
                 </div>
               )}
 
-              {!task.completed && (
-                <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
-                  {isEditing ? (
-                    <div onClick={(e) => handleSaveEdit(e, task.id)} style={{ cursor: 'pointer', fontSize: '12px', padding: '2px' }}>✅</div>
-                  ) : (
-                    <>
+              <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
+                {isEditing ? (
+                  <div onClick={(e) => handleSaveEdit(e, task.id)} style={{ cursor: 'pointer', fontSize: '12px', padding: '2px' }}>✅</div>
+                ) : (
+                  <>
+                    {!task.completed && (
                       <div onClick={(e) => handleStartEdit(e, task)} style={{ cursor: 'pointer', fontSize: '11px', padding: '2px', opacity: 0.7 }}>✏️</div>
-                      <div onClick={(e) => handleDeleteTask(e, task.id)} style={{ cursor: 'pointer', fontSize: '11px', padding: '2px', opacity: 0.7 }}>❌</div>
-                    </>
-                  )}
-                </div>
-              )}
+                    )}
+                    <div onClick={(e) => handleDeleteTask(e, task.id)} style={{ cursor: 'pointer', fontSize: '11px', padding: '2px', opacity: 0.7 }}>❌</div>
+                  </>
+                )}
+              </div>
               
               {!isEditing && (
                 <div 
