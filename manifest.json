@@ -5,7 +5,9 @@
   "description": "Premium ADHD focus timer and workflow companion.",
   "permissions": [
     "storage",
-    "identity"
+    "identity",
+    "alarms",
+    "notifications"
   ],
   "oauth2": {
     "client_id": "730813875128-km246te4qh5q11t6tq63lv19k40u88dp.apps.googleusercontent.com",

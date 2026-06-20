@@ -35,10 +35,45 @@ export default function PlanningScreen({ tasks, setTasks, onSelectTask, onToggle
         if (text.includes('high priority') || text.includes('priority one') || text.includes('p1')) { priority = 'p1'; text = text.replace(/high priority|priority one|p1/g, '').trim(); }
         else if (text.includes('priority two') || text.includes('p2')) { priority = 'p2'; text = text.replace(/priority two|p2/g, '').trim(); }
         else if (text.includes('priority three') || text.includes('p3')) { priority = 'p3'; text = text.replace(/priority three|p3/g, '').trim(); }
-        else if (text.includes('low priority') || text.includes('p4')) { priority = 'p4'; text = text.replace(/low priority|p4/g, '').trim(); }
+        let scheduledTime = null;
+        let scheduledTimeStr = null;
+        const timeMatch = text.match(/\bat\s+(\d{1,2}(?::\d{2})?\s*(?:am|pm)?)\b/i);
+        if (timeMatch) {
+          scheduledTimeStr = timeMatch[1];
+          text = text.replace(timeMatch[0], '').trim();
+          
+          const timeStr = scheduledTimeStr.toLowerCase();
+          const isPm = timeStr.includes('pm');
+          const isAm = timeStr.includes('am');
+          const digits = timeStr.replace(/[^\d:]/g, '');
+          let hours = 0, mins = 0;
+          if (digits.includes(':')) {
+            const parts = digits.split(':');
+            hours = parseInt(parts[0], 10);
+            mins = parseInt(parts[1], 10);
+          } else {
+            hours = parseInt(digits, 10);
+          }
+          if (isPm && hours < 12) hours += 12;
+          if (isAm && hours === 12) hours = 0;
+          
+          const d = new Date();
+          d.setHours(hours, mins, 0, 0);
+          if (d.getTime() < Date.now()) d.setDate(d.getDate() + 1); // schedule tomorrow if already passed
+          scheduledTime = d.getTime();
+        }
+
         text = text.charAt(0).toUpperCase() + text.slice(1);
-        return { id: Date.now() + Math.random(), text, priority, completed: false };
+        return { id: Date.now() + Math.random(), text, priority, completed: false, scheduledTime, scheduledTimeStr };
       }).filter(Boolean);
+      
+      newTasks.forEach(task => {
+        if (task.scheduledTime && window.chrome?.alarms) {
+          if (task.scheduledTime > Date.now()) {
+            window.chrome.alarms.create(`task|${task.text}`, { when: task.scheduledTime });
+          }
+        }
+      });
       
       setTasks(prev => [...prev, ...newTasks]);
       setInputText('');
@@ -153,8 +188,11 @@ export default function PlanningScreen({ tasks, setTasks, onSelectTask, onToggle
                   style={{ flex: 1, background: 'transparent', border: 'none', borderBottom: '1px solid var(--color-violet)', color: 'var(--text-primary)', outline: 'none', fontSize: '12px', paddingBottom: '2px' }}
                 />
               ) : (
-                <div style={{ flex: 1, fontSize: '12px', color: 'var(--text-primary)', textDecoration: task.completed ? 'line-through' : 'none', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                <div style={{ flex: 1, fontSize: '12px', color: 'var(--text-primary)', textDecoration: task.completed ? 'line-through' : 'none', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center' }}>
                   {task.text}
+                  {task.scheduledTimeStr && !task.completed && (
+                    <span style={{ fontSize: '10px', color: '#f59e0b', marginLeft: '6px', opacity: 0.9 }}>⏰ {task.scheduledTimeStr}</span>
+                  )}
                 </div>
               )}
 
