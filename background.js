@@ -16,16 +16,28 @@ chrome.runtime.onInstalled.addListener(() => {
 });
 
 // Listen for scheduled task alarms
-chrome.alarms.onAlarm.addListener((alarm) => {
+chrome.alarms.onAlarm.addListener(async (alarm) => {
   if (alarm.name.startsWith("task|")) {
     const taskName = alarm.name.split("|")[1];
-    chrome.notifications.create(alarm.name, {
-      type: "basic",
-      iconUrl: "public/favicon.svg",
-      title: "Focus Buddy: Scheduled Task",
-      message: `It's time to focus on: ${taskName}`,
-      priority: 2,
-      requireInteraction: true
-    });
+    try {
+      await chrome.notifications.create(alarm.name, {
+        type: "basic",
+        iconUrl: "public/favicon.svg",
+        title: "Focus Buddy: Scheduled Task",
+        message: `It's time to focus on: ${taskName}`,
+        priority: 2,
+        requireInteraction: true
+      });
+    } catch (e) {
+      // Fallback if the first one fails due to icon issues (Chrome rejects SVGs or bad paths)
+      chrome.notifications.create(alarm.name + "_fallback", {
+        type: "basic",
+        iconUrl: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=",
+        title: "Focus Buddy: Scheduled Task",
+        message: `It's time to focus on: ${taskName}`,
+        priority: 2,
+        requireInteraction: true
+      });
+    }
   }
 });
